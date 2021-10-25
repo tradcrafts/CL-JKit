@@ -5,7 +5,6 @@
 (jkit.base:define-package :jkit ()
   (:use :cl)
   (:nicknames :jk)
-;  (:import/export :jkit.base :jkit.algebraic.core :jkit.embed :jkit.prolog)
   (:import/export :jkit.base :jkit.algebraic.core :jkit.prolog)
   (:export
    #:full-mode
