@@ -9,7 +9,6 @@
   (:import/export :jkit.core.basic-definitions)
 
   #+clisp (:import-from ext #:string-concat #:getenv #:memoized #:with-collect)
-  #-clisp (:import-from kmrcl #:getpid)
   
   (:export
 
@@ -32,7 +31,6 @@
    #:getenv
    #:memoized #:memoized-with-checking
    #:system
-   #:getpid
 
    #:with-collect
 
@@ -346,8 +344,6 @@
   (ccl:setenv name x)
   x)
 
-#+clisp
-(defun getpid () (ext:process-id))
 
 #-clisp
 (defmacro with-collect ((&rest collectors) &body body)

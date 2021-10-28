@@ -4,7 +4,7 @@
 
 (asdf:defsystem :jkit.core  
   :license "LLGPL"
-  :depends-on (:alexandria :kmrcl :metabang-bind :split-sequence :anaphora
+  :depends-on (:alexandria :metabang-bind :split-sequence :anaphora
                            :cl-ppcre :cl-annot :cl-cont :cffi)
   :serial t
   :components (

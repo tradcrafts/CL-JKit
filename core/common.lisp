@@ -35,7 +35,7 @@
   ;; (:import/export-from alexandria #:deletef)
   ;; (:import/export-from alexandria #:negative-integer #:negative-integer-p
   ;;                      #:non-negative-integer #:non-negative-integer-p)
-  (:import/export-from kmrcl #:ensure-string)
+  ;;(:import/export-from kmrcl #:ensure-string)
   (:import/export-from alexandria
                        #:alist-hash-table 	#:alist-plist #:appendf 	#:array-index
                        #:array-length 	#:assoc-value #:binomial-coefficient 	#:circular-list

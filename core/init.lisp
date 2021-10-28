@@ -3,13 +3,20 @@
 ;; Copyright (c) 2012-2021 tradcrafts
 
 (defpackage :jkit.core.init
-  (:use :cl :kmrcl)
+  (:use :cl)
   (:export
    #:define-package
    #:export*
+   #:ensure-string
    ))
 
 (in-package :jkit.core.init)
+
+(defun ensure-string (src)
+  (cond ((stringp src) src)
+        ((symbolp src) (symbol-name src))
+        (t (format nil "~A" src))))
+
 
 (defgeneric <pkg-exports> (package))
 
@@ -162,7 +169,7 @@
 
 (defun export* (sym-or-syms)
   (flet ((pushback-if-needed (x given)
-           (unless (member (kmrcl:ensure-string x) (cdr given) :key #'kmrcl:ensure-string :test #'equal)
+           (unless (member (ensure-string x) (cdr given) :key #'ensure-string :test #'equal)
              (export x)
              (nconc given (list x)))))
          

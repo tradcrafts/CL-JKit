@@ -5,7 +5,7 @@
 (jkit.core:jkit-core-header)
 (in-package :jkit.base)
 
-(random 16)
+;(random 16)
 ;@eval-always
 (defun te/pre (x)  (print 'test-ok! )3)
 (defmacro tem (x)  `(list ,(te/pre x)))
