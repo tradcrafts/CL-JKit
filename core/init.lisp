@@ -7,15 +7,14 @@
   (:export
    #:define-package
    #:export*
-   #:ensure-string
    ))
 
 (in-package :jkit.core.init)
 
-(defun ensure-string (src)
+(defun <ensure-string> (src)
   (cond ((stringp src) src)
         ((symbolp src) (symbol-name src))
-        (t (format nil "~A" src))))
+        (t (error "~W is not a string or a symbol" src))))
 
 
 (defgeneric <pkg-exports> (package))
@@ -36,11 +35,11 @@
     pkg))
 
 (defun <name-eq> (a b)
-  (string= (ensure-string a) (ensure-string b)))
+  (string= (<ensure-string> a) (<ensure-string> b)))
 
 ;; 長さ1のnameには反応しないことに注意
 (defun <unexport-by-initial-char> (ch name)
-  (let ((s (ensure-string name)))
+  (let ((s (<ensure-string> name)))
     (unless (and (> (length s) 1)
                  (eql (char s 0) ch))
       (list name))))
@@ -169,7 +168,7 @@
 
 (defun export* (sym-or-syms)
   (flet ((pushback-if-needed (x given)
-           (unless (member (ensure-string x) (cdr given) :key #'ensure-string :test #'equal)
+           (unless (member (<ensure-string> x) (cdr given) :key #'<ensure-string> :test #'equal)
              (export x)
              (nconc given (list x)))))
          
