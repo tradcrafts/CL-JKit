@@ -202,7 +202,7 @@
      (evaluation (#`:HERE . ?))
      (slot (:OR (:CALL constant)
                 (:CALL evaluation)
-                {symbol}
+                (:-> :TYPE symbol)
                 '?))
      
      )

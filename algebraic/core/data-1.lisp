@@ -168,10 +168,10 @@
 
 (defun <define-data> (name decls local?)
   (do-unify decls
-    (:EACH (:OR {symbol}
-                (:APPEND ({symbol})
-                         (:EACH+ (:OR {symbol}
-                                      ({symbol} {symbol}))))))
+    (:EACH (:OR (:-> :type symbol)
+                (:APPEND ((:-> :type symbol))
+                         (:EACH+ (:OR (:-> :type symbol)
+                                      ((:-> :type symbol) (:-> :type symbol)))))))
     :on-failure (error "DEFINE-DATA: wrong declaration(s). ~D" decls))
   #{let (main
          (superclass (unless (and (= 1 (length decls))
@@ -349,10 +349,10 @@
 ;; OBSOLETE
 '(defmacro define-internal-data (name &rest decls)
   (do-unify decls
-    (:EACH (:OR {symbol}
-                (:APPEND ({symbol})
-                         (:EACH+ (:OR {symbol}
-                                      ({symbol} {symbol}))))))
+    (:EACH (:OR (:-> :type symbol)
+                (:APPEND ((:-> :type symbol))
+                         (:EACH+ (:OR (:-> :type symbol)
+                                      ((:-> :type symbol) (:-> :type symbol)))))))
     :on-failure (error "DEFINE-DATA: wrong declaration(s). ~D" decls))
   #{let (main
          (superclass (unless (and (= 1 (length decls))

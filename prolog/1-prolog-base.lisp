@@ -143,7 +143,7 @@
 
 (defun probably-rule-name? (x)
   (do-unify x (:OR (:-> (atom))
-                   ({keyword} (:-> (atom))))))
+                   ((:-> :type keyword) (:-> (atom))))))
 
 (defun <**-*> (header xss &optional replace-p)
   (when (probably-rule-name? header)
