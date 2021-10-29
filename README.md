@@ -6,13 +6,10 @@ SBCL. CCL, CMUCL
 
 $ ros install tradcrafts/cl-jkit
 
-
 -- **git** --
 
-$ cd quicklisp/localprojects
-
+$ cd quicklisp/local-projects
 $ git clone https://github.com/tradcrafts/cl-jkit
-
 CL> (ql:register-local-projects)
 
 
