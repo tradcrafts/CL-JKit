@@ -9,7 +9,9 @@ $ ros install tradcrafts/cl-jkit
 -- **git** --
 
 $ cd quicklisp/local-projects
+
 $ git clone https://github.com/tradcrafts/cl-jkit
+
 CL> (ql:register-local-projects)
 
 
