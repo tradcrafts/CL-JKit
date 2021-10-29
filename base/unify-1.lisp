@@ -95,9 +95,9 @@
  (set-macro-character 
   #\{
   (lambda (stream char)
-    (error "EXPERIMENTAL TEST ERROR")
     @ignore (char)
-    (let* ((contents (read-delimited-list #\} stream t))
+    (let* ((_ (error "EXPERIMENTAL TEST ERROR"))
+           (contents (read-delimited-list #\} stream t))
            (main (member-if-not #/(and (symbolp _) (jkit.base.unify::is-var? _))
                                 contents))
            (header (subseq contents 0 (- (length contents) (length main))))
