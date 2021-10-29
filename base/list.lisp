@@ -9,7 +9,8 @@
 
 (jkit.core:define-package :jkit.base.list* (:jkit.base.list)
   (:use :cl)
-  (:import/export :jkit.base.member*)
+;  (:import/export :jkit.base.member*)
+  (:import/export :jkit.base.text*)
    (:export
      
      #:alist-p #:alist
