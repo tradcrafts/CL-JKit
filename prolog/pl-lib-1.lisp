@@ -6,10 +6,6 @@
 (in-package :jkit.prolog)
 
 
-                                        ;(in-package :common)
-                                        ;(use-package :gambol)
-                                        ;(use-package :prolog)
-
 (pl. loop (:-))
 (pl-circulate 'loop)
 
@@ -38,7 +34,6 @@
 @export*
 (pl. /= (?x ?y :- (not (:= ?x ?y))))
 
-
 (define-pl-op  boundp (0 v) (boundp v))
 @export
 (define-pl-op* set! (0 v a) (setf (symbol-value v) a))
@@ -50,7 +45,6 @@
 @export
 (define-pl-op* apply! (1 v f) (setf (symbol-value v)
                                       (funcall f (symbol-value v))))
-
 
 (define-pl-op atom (0 a)  (atom a))
 (define-pl-op listp (0 a) (listp a))
@@ -185,12 +179,10 @@
      (?x (?x . ?l) ?l)
      (?x (?y . ?l) (?y . ?l1) :- ($del ?x ?l ?l1)))
 
-
 @export*
 (define-pl-macro call (form)
   (let ((tmp (pl-genvar)))
     `(and (:is ,tmp (identity ,form)) ,tmp)  ))
-
                                         ;(pl. map! 
                                         ;         (?f (?x . ?xs) (?y . ?ys) :- (bind ?e (?f ?x '?y)) ?e (map! ?f ?xs ?ys))
                                         ;         (?f nil nil))
@@ -208,8 +200,6 @@
               (:= ?dst ?result)
               (makunbound ?tmpvar)))
 
-
-
 (pl. findall
      (?x ?term ?dst :- 
          (gensym ?tmpvar) 
@@ -222,8 +212,6 @@
               (apply! ?tmpvar nreverse ?result)
               (:= ?dst ?result)
               (makunbound ?tmpvar)))
-
-
 
 
 (define-pl-macro test (v)
