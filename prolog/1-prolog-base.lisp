@@ -59,7 +59,7 @@
 
    #:*- #:*--
    #:**-
-   #:consult
+   #:pl. #:pl+
    ;#:deflop #:deflop*
    #:define-pl-op #:define-pl-op*
    
@@ -76,19 +76,26 @@
 (in-package :jkit.prolog.base) 
 
 
-(defmacro consult (rule-name &body defs)
+(defun <define-pl-rule> (op redefine-p rule-name defs)
   `(prog1
      ',rule-name
-     (pl-clear ',rule-name)
+     ,@(when redefine-p `((pl-clear ',rule-name)))
      ,@(mapcar (lambda (def)
                 (if (listp def)
                   (bind (((head &rest rest) (split-sequence :- def)))
                     (when (< 1 (length rest))
-                      (error "consult: syntax error: too much `:-' : ~D" def))
+                      (error "~A: Syntax Error: too much `:-' : ~D" op def))
                     `(*- (,rule-name ,@head) ,@(car rest)))
                   `(*- (,rule-name ,def))
                 ))
               defs)))
+  
+(defmacro pl. (rule-name &body defs)
+  (<define-pl-rule> 'pl. t rule-name defs))
+
+(defmacro pl+ (rule-name &body defs)
+  (<define-pl-rule> 'pl+ nil rule-name defs))
+
 
 ;; [2013-08-21]
 (defmacro **- (rule-name &body defs)
@@ -119,8 +126,8 @@
        ',name
       (setf (symbol-function ',f) (lambda (,@params) ,@body))
       ,(if ys
-        `(consult ,name (,@xs ,@ys :- (:is ,@ys (,f ,@xs))))
-        `(consult ,name (,@xs :- (:lop (,f ,@xs))))))))
+        `(pl. ,name (,@xs ,@ys :- (:is ,@ys (,f ,@xs))))
+        `(pl. ,name (,@xs :- (:lop (,f ,@xs))))))))
     
 (defmacro define-pl-op* (name (n &rest params) &body body)
   (let ((ys (<make-variables> 0 n))

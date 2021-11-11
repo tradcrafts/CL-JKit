@@ -246,7 +246,8 @@
 
 (defun <unzip> (xss m acc &aux (xs (car xss)))
   (cond (xs
-          (assert (and 'unzip (= m (length xs))))
+          (unless (= m (length xs))
+            (error "UNZIP: size mismatch"))
           (map-into acc 
                     (lambda (a x) (cons x a))
                     acc xs)

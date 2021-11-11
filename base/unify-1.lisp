@@ -88,6 +88,8 @@
 ;; {?a ?b symbol ...} -> (:-> ?a ?b sybmol :WHOLE ...)
 ;; なお、{}{?a}などが:ANDで構造化されるのは意図的なものであり、
 ;; 普通は構造化の意図を持って使用される（リスト・ベクタに対する評価順序の制御）
+
+ #|
  @select-reader jkit.core.reader::%internal%
  (set-macro-character #\} (get-macro-character #\)))
 
@@ -109,7 +111,10 @@
             ((and (symbolp x) #!(keywordp x))
               `(:-> ,@header ,x :whole ,@(cdr main)))
             (t 
-              `(:-> ,@contents)))))))
+              `(:-> ,@contents))))))
+|#
+
+ )
 
 (register-reader-registerer '|unify-1| '<register-readers>)
 

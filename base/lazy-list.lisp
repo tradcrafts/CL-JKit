@@ -44,6 +44,8 @@
    #:&filter #:&filter-not
    #:&flatten
 
+   #:&zip #:&unzip
+
    #:&collect #:&with-collect
 
    #:&assoc #:&assoc-if #:&assoc-if-not
@@ -612,23 +614,49 @@
 (defun &drop-while (f xs &key key)
   (&member-if-not f xs :key key))
 
-(defun &unzip2 (xs)
-  (list (&mapcar #'&first xs)
- (&mapcar #'&second xs)))
+;; (defun &unzip2 (xs)
+;;   (list (&mapcar #'&first xs)
+;;  (&mapcar #'&second xs)))
      
-(defun &unzip3 (xs)
-  (list (&mapcar #'&first xs)
- (&mapcar #'&second xs)
- (&mapcar #'&third xs)))
+;; (defun &unzip3 (xs)
+;;   (list (&mapcar #'&first xs)
+;;  (&mapcar #'&second xs)
+;;  (&mapcar #'&third xs)))
 
+
+;; (defun <&zip> (xss)
+;;   (when (valid-all? xss)
+;;     (&cons! (mapcar #'car xss)
+;;             (<&zip> (mapcar #'&cdr xss)))))
+
+;; (defun &zip (&rest lists)
+;;   (<&zip> lists))
 
 (defun <&zip> (xss)
-  (when (valid-all? xss)
-    (&cons! (mapcar #'car xss)
-            (<&zip> (mapcar #'&cdr xss)))))
+  (when (every #'identity xss)
+    (&cons (mapcar #'&car xss)
+           (<&zip> (mapcar #'&cdr xss)))))
+  
+(defun &zip (&rest xss)
+  (<&zip> xss))
 
-(defun &zip (&rest lists)
-  (<&zip> lists))
+(defun <&unzip> (xss index n)
+  (when xss
+    (let ((xs (&car xss)))
+      (unless (= n (length xs))
+        (error "&UNZIP: size mismatch"))
+      (&cons! (nth index xs) (<&unzip> (&cdr xss) index n)))))
+
+(defun &unzip (xss)
+  (when xss
+    (let ((xs (&car xss)))
+      (assert (proper-list-p xs))
+      (let (result
+            (n (length xs)))
+        (dotimes (i n (nreverse result))
+          (push (<&unzip> xss i n) result))))))
+
+
 
 (defun <&append> (xss)
   (when xss

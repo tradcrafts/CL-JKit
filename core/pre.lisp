@@ -47,11 +47,28 @@
    #:set #:inc #:dec #:swap #:?
    #:div #:%
 
-   
+   #:ensure-string #:ensure-package #:ensure-keyword
    ))
 
 
 (in-package :jkit.core.pre)
+
+(defun ensure-string (x)
+  (cond ((stringp x) x)
+        ((symbolp x) (symbol-name x))
+        (t (error "ENSURE-STRING: wrong argument: ~W" x))))
+
+(defun ensure-package (x)
+  (cond ((packagep x) x)
+        ((or (stringp x) (symbolp x))
+          (let ((pkg (find-package x)))
+            (unless pkg (error "ENSURE-PACKAGE: package ~A not found" x))
+            pkg))
+        (t (error "ENSURE-PACKAGE: wrong argument: ~W" x))))
+
+(defun ensure-keyword (x)
+  (cond ((keywordp x) x)
+        ((intern (ensure-string x) :keyword))))
 
 ;; すべて偽なら真となる。
 (defmacro none (&rest exps)

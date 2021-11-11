@@ -6,37 +6,37 @@
 (in-package :jkit.prolog)
 
 
-;(in-package :common)
-;(use-package :gambol)
-;(use-package :prolog)
+                                        ;(in-package :common)
+                                        ;(use-package :gambol)
+                                        ;(use-package :prolog)
 
-(consult loop (:-))
+(pl. loop (:-))
 (pl-circulate 'loop)
 
 @export*
-(consult foreach 
-         (?src ?x :- (:nonvar ?src) (:is/2 ?itor (itor-begin ?src)) (:undef ?src) ($foreach ?itor ?x)))
-(consult $foreach
-         (?itor ? :- (:lop (itor-end-p ?itor)) (:cut) (:fail))
-         (?itor ?x :- (:is/2 ?x (itor-get ?itor)) (:lisp (itor-incr ?itor))))
+(pl. foreach 
+     (?src ?x :- (:nonvar ?src) (:is/2 ?itor (itor-begin ?src)) (:undef ?src) ($foreach ?itor ?x)))
+(pl. $foreach
+     (?itor ? :- (:lop (itor-end-p ?itor)) (:cut) (:fail))
+     (?itor ?x :- (:is/2 ?x (itor-get ?itor)) (:lisp (itor-incr ?itor))))
 (pl-circulate '$foreach)
 
 @export*
-(consult append
-         (?a ?b ?c :- (:nonvar ?c) (:cut) ($append ?a ?b ?c))
-         (?a ?b ?c :- (:nonvar ?a ?b) (:cut) ($append ?a ?b ?c)))
+(pl. append
+     (?a ?b ?c :- (:nonvar ?c) (:cut) ($append ?a ?b ?c))
+     (?a ?b ?c :- (:nonvar ?a ?b) (:cut) ($append ?a ?b ?c)))
 
-(consult $append
-         ((?D . ?x) ?b (?D . ?y) :- ($append ?x ?b ?y))
-         (nil ?x ?x))
-
-@export*
-(consult not
-         (?x :- ?x (:cut) (:fail))
-         (?x))
+(pl. $append
+     ((?D . ?x) ?b (?D . ?y) :- ($append ?x ?b ?y))
+     (nil ?x ?x))
 
 @export*
-(consult /= (?x ?y :- (not (:= ?x ?y))))
+(pl. not
+     (?x :- ?x (:cut) (:fail))
+     (?x))
+
+@export*
+(pl. /= (?x ?y :- (not (:= ?x ?y))))
 
 
 (define-pl-op  boundp (0 v) (boundp v))
@@ -57,7 +57,7 @@
 (define-pl-op consp (0 a) (consp a))
 @export
 (define-pl-op varp (0 a) (and (consp a)
-                       (eql (car a) :*VAR*)))
+                              (eql (car a) :*VAR*)))
 
 (define-pl-op < (0 a b) (< a b))
 (define-pl-op <= (0 a b) (<= a b))
@@ -75,115 +75,115 @@
 (define-pl-op cons (1 a b) (cons a b))
 
 @export*
-(consult <- (?dst ?src :- (:is ?dst (identity ?src))))
+(pl. <- (?dst ?src :- (:is ?dst (identity ?src))))
 
 (define-pl-macro term (&rest terms)
   (let ((v (pl-genvar)))
-  `(every ((:is ,v (identity ,terms))
-           ,v))))
+    `(every ((:is ,v (identity ,terms))
+             ,v))))
 
 @export*
-(consult success ())
+(pl. success ())
 @export*
-(consult failure (:- (fail)))
-(consult null (nil))
+(pl. failure (:- (fail)))
+(pl. null (nil))
 @export*
-(consult head ((?x . ?) ?x :- (:nonvar ?x)))
+(pl. head ((?x . ?) ?x :- (:nonvar ?x)))
 @export*
-(consult tail ((? . ?x) ?x :- (:nonvar ?x)))
+(pl. tail ((? . ?x) ?x :- (:nonvar ?x)))
 
 @export*
-(consult or/2  
-         (?a ?b :- ?a (:cut))
-         (?a ?b :- ?b))
+(pl. or/2  
+     (?a ?b :- ?a (:cut))
+     (?a ?b :- ?b))
 
 @export*
-(consult try  
-         (?a ?b :- ?a (:cut))
-         (?a ?b :- ?b (:fail)))
+(pl. try  
+     (?a ?b :- ?a (:cut))
+     (?a ?b :- ?b (:fail)))
 
 @export*
-(consult and/2 (?a ?b :- ?a ?b))
+(pl. and/2 (?a ?b :- ?a ?b))
 @export*
-(consult bind (?dst ?x :- (:is ?dst (identity ?x))))
+(pl. bind (?dst ?x :- (:is ?dst (identity ?x))))
 
 @export*
-(consult  every
-     (nil)
-     ((?x . ?xs) :- ?x (every ?xs)))
+(pl.  every
+      (nil)
+      ((?x . ?xs) :- ?x (every ?xs)))
 
-(consult and 
+(pl. and 
      (nil :-)
      ((?x . ?xs) :- ?x (every ?xs)))
 
 @export*
-(consult some
+(pl. some
      (nil :- (failure))
      ((?x . ?xs) :- ?x (:cut))
      ((?x . ?xs) :- (some ?xs)))
 
-(consult or
+(pl. or
      (nil :- (failure))
      ((?x . ?xs) :- ?x (:cut))
      ((?x . ?xs) :- (some ?xs)))
 
 @export*
-(consult map
-         (?f (?x . ?xs) ((?f ?x) . ?ys)  :- (map ?f ?xs ?ys))
-         (?f nil nil))
+(pl. map
+     (?f (?x . ?xs) ((?f ?x) . ?ys)  :- (map ?f ?xs ?ys))
+     (?f nil nil))
 
-(consult member
-         (?a ?b :- (:nonvar ?b) ($member ?a ?b)))
+(pl. member
+     (?a ?b :- (:nonvar ?b) ($member ?a ?b)))
 
-(consult $member
-         (?a (?a . ?))
-         (?a (? . ?xs) :- ($member ?a ?xs)))
-
-@export*
-(consult add
-  (?a ?b ?c :- (:any-var ?a ?c) ($add ?a ?b ?c)))
-
-(consult $add
-  ((?x . ?xs) ?a (?x . ?ys) :- ($add ?xs ?a ?ys))
-  (nil ?a (?a)))
+(pl. $member
+     (?a (?a . ?))
+     (?a (? . ?xs) :- ($member ?a ?xs)))
 
 @export*
-(consult list?
-  (?x :- (:var ?x) (:cut) (:fail))
-  ((?x . ?xs))
-  (nil))
+(pl. add
+     (?a ?b ?c :- (:any-var ?a ?c) ($add ?a ?b ?c)))
+
+(pl. $add
+     ((?x . ?xs) ?a (?x . ?ys) :- ($add ?xs ?a ?ys))
+     (nil ?a (?a)))
 
 @export*
-(consult symbol?
-  (?x :- (:lop (symbolp ?x))))
-
-(consult intern 
-         (?name ?result :- (:is ?result (intern ?name :pl)))
-         (?name ?package ?result :- (:is ?result (intern ?name ?package))))
-
-(consult reverse 
-         (?x ?y :- (:nonvar ?x) (:cut) ($reverse ?x nil ?y))
-         (?x ?y :- (:nonvar ?y) ($reverse ?y nil ?x)))
-         
-(consult $reverse
-         (nil ?l ?l)
-         ((?x . ?l) ?y ?r :- ($reverse ?l (?x . ?y) ?r)))
+(pl. list?
+     (?x :- (:var ?x) (:cut) (:fail))
+     ((?x . ?xs))
+     (nil))
 
 @export*
-(consult permutation
-         (?a ?b :- (:nonvar ?a) (:cut) ($permutation ?a ?b))
-         (?a ?b :- (:nonvar ?b) ($permutation ?b ?a)))
+(pl. symbol?
+     (?x :- (:lop (symbolp ?x))))
 
-(consult $permutation
-         (nil nil :- (:cut))
-         (?l (?x . ?l2) :- (del ?x ?l ?l1) ($permutation ?l1 ?l2)))
+(pl. intern 
+     (?name ?result :- (:is ?result (intern ?name :pl)))
+     (?name ?package ?result :- (:is ?result (intern ?name ?package))))
+
+(pl. reverse 
+     (?x ?y :- (:nonvar ?x) (:cut) ($reverse ?x nil ?y))
+     (?x ?y :- (:nonvar ?y) ($reverse ?y nil ?x)))
+
+(pl. $reverse
+     (nil ?l ?l)
+     ((?x . ?l) ?y ?r :- ($reverse ?l (?x . ?y) ?r)))
 
 @export*
-(consult del
-         (?a ?b ?c :- (:nonvar ?b) ($del ?a ?b ?c)))
-(consult $del
-         (?x (?x . ?l) ?l)
-         (?x (?y . ?l) (?y . ?l1) :- ($del ?x ?l ?l1)))
+(pl. permutation
+     (?a ?b :- (:nonvar ?a) (:cut) ($permutation ?a ?b))
+     (?a ?b :- (:nonvar ?b) ($permutation ?b ?a)))
+
+(pl. $permutation
+     (nil nil :- (:cut))
+     (?l (?x . ?l2) :- (del ?x ?l ?l1) ($permutation ?l1 ?l2)))
+
+@export*
+(pl. del
+     (?a ?b ?c :- (:nonvar ?b) ($del ?a ?b ?c)))
+(pl. $del
+     (?x (?x . ?l) ?l)
+     (?x (?y . ?l) (?y . ?l1) :- ($del ?x ?l ?l1)))
 
 
 @export*
@@ -191,37 +191,37 @@
   (let ((tmp (pl-genvar)))
     `(and (:is ,tmp (identity ,form)) ,tmp)  ))
 
-;(consult map! 
-;         (?f (?x . ?xs) (?y . ?ys) :- (bind ?e (?f ?x '?y)) ?e (map! ?f ?xs ?ys))
-;         (?f nil nil))
+                                        ;(pl. map! 
+                                        ;         (?f (?x . ?xs) (?y . ?ys) :- (bind ?e (?f ?x '?y)) ?e (map! ?f ?xs ?ys))
+                                        ;         (?f nil nil))
 
 
 @export*
-(consult findall
-    (?x ?term ?dst :- 
-        (gensym ?tmpvar) 
-        (set! ?tmpvar nil) 
-        (findall ?tmpvar ?x ?term ?dst))
-    (?tmpvar ?x ?term ?dst :- ?term (push ?x ?tmpvar) (:fail))
-    (?tmpvar ?x ?term ?dst :- 
-             (apply! ?tmpvar nreverse ?result)
-             (:= ?dst ?result)
-             (makunbound ?tmpvar)))
+(pl. findall
+     (?x ?term ?dst :- 
+         (gensym ?tmpvar) 
+         (set! ?tmpvar nil) 
+         (findall ?tmpvar ?x ?term ?dst))
+     (?tmpvar ?x ?term ?dst :- ?term (push ?x ?tmpvar) (:fail))
+     (?tmpvar ?x ?term ?dst :- 
+              (apply! ?tmpvar nreverse ?result)
+              (:= ?dst ?result)
+              (makunbound ?tmpvar)))
 
 
 
-(consult findall
-    (?x ?term ?dst :- 
-        (gensym ?tmpvar) 
-        (set! ?tmpvar nil) 
-        ((:strict findall-body) ?tmpvar ?x ?term ?dst)))
+(pl. findall
+     (?x ?term ?dst :- 
+         (gensym ?tmpvar) 
+         (set! ?tmpvar nil) 
+         ((:strict findall-body) ?tmpvar ?x ?term ?dst)))
 
-(consult (:strict findall-body)
-    (?tmpvar ?x ?term ?dst :- ?term (push ?x ?tmpvar) (:fail))
-    (?tmpvar ?x ?term ?dst :- 
-             (apply! ?tmpvar nreverse ?result)
-             (:= ?dst ?result)
-             (makunbound ?tmpvar)))
+(pl. (:strict findall-body)
+     (?tmpvar ?x ?term ?dst :- ?term (push ?x ?tmpvar) (:fail))
+     (?tmpvar ?x ?term ?dst :- 
+              (apply! ?tmpvar nreverse ?result)
+              (:= ?dst ?result)
+              (makunbound ?tmpvar)))
 
 
 
