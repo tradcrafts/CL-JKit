@@ -290,15 +290,16 @@
     (let* ((var (gensym))
            (pre-code (make-pre-code ptn dst var info))
            (post-code (make-post-code ptn dst var info)))
-      `(let ((,var ,dst)) (and ,pre-code ,post-code)))))
+      `(let ((,var ,dst)) (declare (ignorable ,var)) (and ,pre-code ,post-code)))))
 
 (defmacro simple-unify (ptn dst info)
   (let ((var (gensym)))
     `(let ((,var ,dst))
-      (and
-        (pre-same? ,ptn ,var ,info)
-        ,@(when (inner-structure? ptn)
-                `((<check> ,ptn ,var ,info)))))))
+       (declare (ignorable ,var))
+       (and
+         (pre-same? ,ptn ,var ,info)
+         ,@(when (inner-structure? ptn)
+             `((<check> ,ptn ,var ,info)))))))
     
 (defmethod make-post-code ((ptn vector) dst var info)
   (let (tmp
@@ -334,7 +335,7 @@
   (declare (ignore dst))
 
   (unless (consp ptn)
-    (error "UNIFY LIBRALY: illegal :special clause"))
+    (error "Unify: illegal :special clause"))
 
   (let ((success t)
         (h (car ptn)))
