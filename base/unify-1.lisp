@@ -254,7 +254,7 @@
       (list 'funcall f x y))))
 
 (defmacro pre-same? (src dst info)
-  (cond ((symbolp src) 
+  (cond ((and (symbolp src) (symbol-package src) (not (keywordp src)))
           (if (is-var? src)
             (cond ((is-wildcard? src) t)
                   ((is-forced-var? src) 
@@ -264,6 +264,11 @@
                          (progn (setq ,var ,dst) t)
                          (do-unify-compare ,info ,var ,dst)))))
             `(eq ',src ,dst)))
+        ((keywordp src) `(eq ,src ,dst))
+        ((symbolp src) `(and (symbolp ,dst)
+                             (not (keywordp ,dst))
+                             (equal ,(symbol-name src) (symbol-name ,dst))))
+
         ((consp src) 
           ;(if (eq :-> (car src))
           (if (structured? src)
@@ -360,11 +365,14 @@
 
                                         ; TODO　エラー処理
     (cond ((member h '(:member :not-member
-                               :type :not-type
-                               :eq :not-eq
-                               :eql :not-eql
-                               :equal :not-equal
-                               :equalp :not-equalp))
+                       :type :not-type
+                       :eq :not-eq
+                       :eql :not-eql
+                       :equal :not-equal
+                       :equalp :not-equalp
+                       :name= :name/= :name== :name/==
+                       :string= :string/=
+                       ))
               success)
           ((member h '(:member-by :not-member-by))
             (if (and (>= (length ptn) 2)
@@ -433,6 +441,13 @@
           (t (error "UNKNOWN")))))
 
 
+
+;; (defmacro <safe-name=> (var dst) `(and (symbolp ,var) (name= ,var ,dst)))
+;; (defmacro <safe-name==> (var dst) `(and (symbolp ,var) (name== ,var ,dst)))
+;; (defmacro <safe-string=> (var dst)
+;;   `(and (or (symbolp ,var) (stringp ,var) (characterp ,var))
+;;         (string= ,var ,dst)))
+
 (defun special-post-code (ptn dst var info &aux (h (car ptn)))
 
 
@@ -461,13 +476,21 @@
          ((assoc h '((:eq . eq) (:not-eq . eq) (:eql . eql) 
                      (:not-eql . eql)
                      (:equal . equal) (:not-equal . equal)
-                     (:equalp . equalp) (:not-equalp . equalp)))
-          (let (tmp)
-            (setq tmp (dolist (x (cdr ptn) (nreverse tmp))
-                        (push `(,(cdr it) ,var ',x) tmp)))
-            (if (eq #\N (char (symbol-name h) 0)) ;; not-で始まる
-              `(not (or ,@tmp))
-              `(or ,@tmp))))
+                     (:equalp . equalp) (:not-equalp . equalp)
+                     (:name= . name=) (:name/= . name=) (:name== . name==) (:name/== . name==)
+                     (:string= . string=) (:string/= . string=)
+                     ))
+          (let (form)
+            (setq form (dolist (x (cdr ptn) `(or ,@(nreverse form)))
+                         (push `(,(cdr it) ,var ',x) form)))
+            (when (member h '(:not-eq :not-eql :not-equal :not-equalp :name/= :name/== :string/=))
+              (setq form `(not ,form)))
+            (cond ((member h '(:name= :name== :name/= :name/==)) 
+                    `(and (symbolp ,var) ,form))
+                  ((member h '(:string= :string/=)) 
+                    `(and (or (stringp ,var) (symbolp ,var) (characterp ,var))
+                          ,form))
+                  (t form))))
 
          ;; OBSOLETE
          ((eq :unify h)

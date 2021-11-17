@@ -34,7 +34,7 @@
 
 (defmacro define-c-library (system-ident &key soname (path :asdf))
   (unless soname
-    (setq soname (string-downcase (ensure-string system-ident))))
+    (setq soname (string-downcase (string system-ident))))
   `(eval-when (:compile-toplevel :load-toplevel :execute)
      (cffi:define-foreign-library ,system-ident
      ((:not :CL-UNWIRED-STANDALONE-APPLICATION)

@@ -47,28 +47,57 @@
    #:set #:inc #:dec #:swap #:?
    #:div #:%
 
-   #:ensure-string #:ensure-package #:ensure-keyword
+   #:ensure-package #:ensure-keyword
+
+   #:name= #:name==    #:name/= #:name/==
+
+
    ))
 
 
 (in-package :jkit.core.pre)
 
-(defun ensure-string (x)
-  (cond ((stringp x) x)
-        ((symbolp x) (symbol-name x))
-        (t (error "ENSURE-STRING: wrong argument: ~W" x))))
-
 (defun ensure-package (x)
   (cond ((packagep x) x)
-        ((or (stringp x) (symbolp x))
+        ((or (stringp x) (symbolp x) (characterp x))
           (let ((pkg (find-package x)))
             (unless pkg (error "ENSURE-PACKAGE: package ~A not found" x))
             pkg))
-        (t (error "ENSURE-PACKAGE: wrong argument: ~W" x))))
+        (t (error "ENSURE-PACKAGE: wrong argument: ~S" x))))
 
 (defun ensure-keyword (x)
   (cond ((keywordp x) x)
-        ((intern (ensure-string x) :keyword))))
+        ((intern (string x) :keyword))))
+
+
+@doc "NAME=:
+(name-eql :a 'a) -> NIL
+(name-eql 'a 'a) -> T
+(name-eql :a :a) -> T
+(name-eql 'pkg-a:a '#:a) -> T"
+
+;; キーワード同士もしくは非キーワード同士の名前の比較
+(defun name= (a b)
+  (assert (and (symbolp a) (symbolp b)))
+  (or (eq a b)
+      (and (not (keywordp a))
+           (not (keywordp b))
+           (equal (symbol-name a) (symbol-name b)))))
+(defun name/= (a b) (not (name= a b)))
+
+;; キーワード・非キーワードを問わない名前の比較
+@doc "NAME==:
+(name-equal :a 'a) -> T
+(name== :a '|a|) -> NIL"
+
+(defun name== (a b)
+  (assert (and (symbolp a) (symbolp b)))
+  (or (eq a b)
+      (equal (symbol-name a) (symbol-name b))))
+    
+
+(defun name/== (a b) (not (name== a b)))
+
 
 ;; すべて偽なら真となる。
 (defmacro none (&rest exps)
