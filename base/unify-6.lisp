@@ -210,11 +210,12 @@
        :on-failure (error ":TO")
        )
 
-    ;(print command)
-    `(let ((r (trseq ,var ,nil ,command)))
-      (if (eq <terr> r)
+                                        ;(print command)
+    (let ((tmp (gensym)))
+    `(let ((,tmp (trseq ,var ,nil ,command)))
+      (if (eq <terr> ,tmp)
         nil
-        (complex-unify r ,body ,info)))
+        (complex-unify ,tmp ,body ,info))))
     ))
 
 
