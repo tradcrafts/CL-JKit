@@ -49,7 +49,8 @@
 
    #:ensure-package #:ensure-keyword
 
-   #:name= #:name==    #:name/= #:name/==
+   #:name= #:name/= #:name-case
+   #:name== #:name/==
 
 
    ))
@@ -83,19 +84,63 @@
       (and (not (keywordp a))
            (not (keywordp b))
            (equal (symbol-name a) (symbol-name b)))))
+
 (defun name/= (a b) (not (name= a b)))
 
-;; キーワード・非キーワードを問わない名前の比較
+(defun <check-for-name-case> (clauses)
+  (dolist (c clauses)
+    (unless (and (proper-list-p c)
+                 (>= (length c) 1)
+                 (let ((s (car c)))
+                   (or (symbolp s)
+                       (and (proper-list-p s)
+                            (every #'symbolp s)))))
+                   
+      (error "NAME-CASE: Illegal clause: ~S" c))))
+
+(defun <name-case-error> (x)
+  (error "NAME-CASE: wrong argument: ~S is not a symbol" x))
+
+(defun <name-case-test> (sym tmp name)
+  (cond ((keywordp sym)
+          `(eq ,sym ,tmp))
+        ((not (symbol-package sym))
+          `(and ,name (equal ,(symbol-name sym) ,name)))
+        (t
+          `(or (eq ',sym ,tmp) (and ,name (equal ,(symbol-name sym) ,name))))))
+
+;; 名前によるcase
+;; 個別にname=を適用するよりも効率的
+;; 一般的なcase構文に準拠
+(defmacro name-case (src &body clauses)
+  (<check-for-name-case> clauses)
+  (let ((tmp (gensym))
+        (name (gensym)))
+    `(let ((,tmp ,src))
+       (unless (symbolp ,tmp) (<name-case-error> ,tmp))
+       (let ((,name (if (not (keywordp ,tmp))
+                      (symbol-name ,tmp))))
+         (declare (ignorable ,name))
+         (cond ,@(mapcar (lambda (c)
+                           (let ((head (car c))
+                                 (body (if (cdr c) (cdr c) '(nil))))
+                             `(,(cond ((eq head t) t)
+                                      ((symbolp head) (<name-case-test> head tmp name))
+                                      (t (list* 'or (mapcar (lambda (sym)
+                                                              (<name-case-test> sym tmp name))
+                                                            head))))
+                                ,@body)))
+                         clauses))))))
+
+
+;; TODO OBSOLETE [2021-11-19] キーワード・非キーワードを問わない名前の比較
 @doc "NAME==:
 (name-equal :a 'a) -> T
 (name== :a '|a|) -> NIL"
-
 (defun name== (a b)
   (assert (and (symbolp a) (symbolp b)))
   (or (eq a b)
       (equal (symbol-name a) (symbol-name b))))
-    
-
 (defun name/== (a b) (not (name== a b)))
 
 

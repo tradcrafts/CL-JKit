@@ -12,7 +12,7 @@
 
 (defun <build-commentary> (lines)
   (unless lines 
-    (return-from <build-commentary> (make-string "")))
+    (return-from <build-commentary> (make-string 0)))
   (let* ((pos (block escape
                 (do ((i 0 (1+ i))
                      (first t t)
@@ -176,6 +176,9 @@
 @inline
 (defun <char-escape> (c)
   (case c
+    (#\\ #\\)
+    (#\" #\")
+    (#\' #\')
     (#\a #\Bel)
     (#\b #\BackSpace)
     (#\f #\Page)
@@ -196,7 +199,7 @@
      (let (escaped
            tmp)
        (do ((c (read-char stream) (read-char stream)))
-           ((eq c #\")
+           ((and (eq c #\") (not escaped))
             (coerce (nreverse tmp) 'string))
          (cond (escaped
                  (setq escaped nil)

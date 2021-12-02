@@ -271,14 +271,6 @@
                  (unless reader-function
                    (error "(\\~A .... is wrong format" ident))
                  (funcall reader-function stream)))
-             ((eq #\. c) ; TODO
-               (unread-char c stream)
-               (let* ((elems (|(-READER| stream #\())
-                      (fn (first elems))
-                      (params (rest elems)))
-                 (unless (fboundp fn)
-                   (error "(~A ...) is wrong format" fn))
-                 (apply fn params)))
              (t 
                (unread-char c stream)
                (|(-READER| stream #\())))))
